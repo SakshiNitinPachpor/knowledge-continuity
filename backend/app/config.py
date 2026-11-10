@@ -11,7 +11,7 @@ class Settings:
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "knowledge-continuity-secure-production-jwt-token-key-2026")
+    SECRET_KEY: str = os.getenv("SECRET_KEY") or os.urandom(32).hex()
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
@@ -46,13 +46,14 @@ class Settings:
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     
     # CORS
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "*"
-    ]
+CORS_ORIGINS: List[str] = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
+    ).split(",")
+    if origin.strip()
+]
 
 settings = Settings()
 settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
